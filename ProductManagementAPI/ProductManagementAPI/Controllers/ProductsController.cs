@@ -65,6 +65,17 @@ namespace ProductManagementAPI.Controllers
 
                 return StatusCode((int)response.Status, response.ErrorMessage);
             }
+
+            [HttpDelete("{id:int}")]
+            public async Task<IActionResult> DeleteProduct(int id, CancellationToken cancellationToken)
+            {
+                var response = await _productService.DeleteProductAsync(id, cancellationToken);
+
+                if (response.Success)
+                    return Ok();
+
+                return StatusCode((int)response.Status, response.ErrorMessage);
+            }
         }
     }
 }

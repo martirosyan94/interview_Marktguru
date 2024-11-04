@@ -77,5 +77,20 @@ namespace ProductManagementAPI.Services.Services
 
             return OperationResult<Product>.Ok(existingProduct);
         }
+
+        public async Task<OperationResult> DeleteProductAsync(int id, CancellationToken cancellationToken)
+        {
+            var productResult = await LoadProductByIdAsync(id, cancellationToken);
+            if (!productResult.Success)
+                return OperationResult.Error(productResult.ErrorMessage, productResult.Status);
+
+            _productRepository.DeleteProduct(productResult.Data!);
+            var success = await _productRepository.SaveChangesAsync(cancellationToken);
+
+            if (!success)
+                return OperationResult<UpdateProductDto>.Error("Failed to Delete the product.", Status.NetworkError);
+
+            return OperationResult.Ok();
+        }
     }
 }
