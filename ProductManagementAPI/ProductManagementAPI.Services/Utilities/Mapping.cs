@@ -41,5 +41,19 @@ namespace ProductManagementAPI.Services.Utilities
                 DateCreated = product.DateCreated
             };
         }
+
+        public static Product ToProductEntityModel(this UpdateProductDto productDto, int id, byte[] rowVersion)
+        {
+            return new Product()
+            {
+                Id = id,
+                Name = productDto.Name,
+                Price = productDto.Price,
+                Available = productDto.Available,
+                Description = productDto.Description,
+                DateCreated = DateTime.UtcNow,
+                RowVersion = rowVersion
+            };
+        }
     }
 }

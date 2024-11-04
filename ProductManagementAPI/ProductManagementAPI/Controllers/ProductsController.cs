@@ -54,6 +54,17 @@ namespace ProductManagementAPI.Controllers
 
                 return StatusCode((int)response.Status, response.ErrorMessage);
             }
+
+            [HttpPut("{id:int}")]
+            public async Task<IActionResult> UpdateProduct(int id, UpdateProductDto product, CancellationToken cancellationToken)
+            {
+                var response = await _productService.UpdateProductAsync(id, product, cancellationToken);
+
+                if (response.Success)
+                    return Ok(response.Data);
+
+                return StatusCode((int)response.Status, response.ErrorMessage);
+            }
         }
     }
 }

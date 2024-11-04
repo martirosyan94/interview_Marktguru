@@ -140,5 +140,37 @@ namespace ProductManagementAPI.UnitTests.ServicesTests
             Assert.AreEqual(Status.NotFound, result.Status);
             Assert.AreEqual($"The product with {productId} not found", result.ErrorMessage);
         }
+
+        [Test]
+        public async Task UpdateProduct_ShouldReturnUpdatedProduct_WhenProductExists()
+        {
+            var updateProductDto = new UpdateProductDto { Name = "IPhone" };
+            var product = new Product { Id = 305, Name = "Google Pixel", RowVersion = new byte[8] };
+            _productRepositoryMock.Setup(repo => repo.GetProductByIdAsync(It.IsAny<int>(), _cancellationToken))
+                .ReturnsAsync(product);
+            _productRepositoryMock.Setup(repo => repo.SaveChangesAsync(_cancellationToken))
+                .ReturnsAsync(true);
+
+            var result = await _productService.UpdateProductAsync(product.Id, updateProductDto, _cancellationToken);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual(updateProductDto.Name, result.Data.Name);
+
+            _productRepositoryMock.Verify(repo => repo.GetProductByIdAsync(It.IsAny<int>(), _cancellationToken), times: Times.Once);
+            _productRepositoryMock.Verify(repo => repo.SaveChangesAsync(_cancellationToken), times: Times.Once);
+        }
+
+        [Test]
+        public async Task UpdateProduct_ShouldReturnError_WhenProductIdDoesNotExist()
+        {
+            int productId = 500;
+            var updateProductDto = new UpdateProductDto { Name = "IPhone" };
+
+            var result = await _productService.UpdateProductAsync(productId, updateProductDto, _cancellationToken);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual(Status.NotFound, result.Status);
+            Assert.AreEqual($"The product with {productId} not found", result.ErrorMessage);
+        }
     }
 }
