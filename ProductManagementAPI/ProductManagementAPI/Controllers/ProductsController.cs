@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProductManagementAPI.Services.Models.Request;
 using ProductManagementAPI.Services.Services;
 
@@ -26,6 +27,18 @@ namespace ProductManagementAPI.Controllers
 
                 if (response.Success)
                     return StatusCode((int)response.Status, response.Data);
+
+                return StatusCode((int)response.Status, response.ErrorMessage);
+            }
+
+            [HttpGet]
+            [AllowAnonymous]
+            public async Task<IActionResult> GetAllProducts(CancellationToken cancellationToken)
+            {
+                var response = await _productService.GetAllProductsAsync(cancellationToken);
+
+                if (response.Success)
+                    return Ok(response.Data);
 
                 return StatusCode((int)response.Status, response.ErrorMessage);
             }
