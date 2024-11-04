@@ -77,5 +77,39 @@ namespace ProductManagementAPI.UnitTests.ServicesTests
 
             _productRepositoryMock.Verify(repo => repo.SaveChangesAsync(_cancellationToken), times: Times.Once);
         }
+
+        [Test]
+        public async Task GetAllProductsAsync_ShouldReturnAllAvailableProducts_WhenAtLeastOneProductExists()
+        {
+            var products = new List<Product>
+            {
+                new Product { Id = 1, Name = "Monitor" },
+                new Product { Id = 2, Name = "Mouse" }
+            };
+            _productRepositoryMock.Setup(repo => repo.GetAllProductsAsync(_cancellationToken))
+                .ReturnsAsync(products);
+
+            var result = await _productService.GetAllProductsAsync(_cancellationToken);
+
+            Assert.IsTrue(result.Success);
+            Assert.IsNotEmpty(result.Data);
+
+            _productRepositoryMock.Verify(repo => repo.GetAllProductsAsync(_cancellationToken), times: Times.Once);
+        }
+
+        [Test]
+        public async Task GetAllProductsAsync_ShouldReturnError_WhenNoProductsFound()
+        {
+            _productRepositoryMock.Setup(repo => repo.GetAllProductsAsync(_cancellationToken))
+                .ReturnsAsync(new List<Product>());
+
+            var result = await _productService.GetAllProductsAsync(_cancellationToken);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual(Status.NotFound, result.Status);
+            Assert.AreEqual("There are no available products", result.ErrorMessage);
+
+            _productRepositoryMock.Verify(repo => repo.GetAllProductsAsync(_cancellationToken), times: Times.Once);
+        }
     }
 }
