@@ -111,5 +111,34 @@ namespace ProductManagementAPI.UnitTests.ServicesTests
 
             _productRepositoryMock.Verify(repo => repo.GetAllProductsAsync(_cancellationToken), times: Times.Once);
         }
+
+        [Test]
+        public async Task GetProductByIdAsync_ShouldReturnProductWithDetails_WhenProductExists()
+        {
+            var product = new Product { Id = 203, Name = "USB-C" };
+            _productRepositoryMock.Setup(repo => repo.GetProductByIdAsync(It.IsAny<int>(), _cancellationToken))
+                .ReturnsAsync(product);
+
+            var result = await _productService.GetProductByIdAsync(product.Id, _cancellationToken);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual(product.Id, result.Data.Id);
+            Assert.AreEqual("USB-C", result.Data.Name);
+
+            _productRepositoryMock.Verify(repo => repo.GetProductByIdAsync(It.IsAny<int>(), _cancellationToken), times: Times.Once);
+
+        }
+
+        [Test]
+        public async Task GetProductByIdAsync_ShouldReturnError_WhenProductIsNotFound()
+        {
+            int productId = 100;
+
+            var result = await _productService.GetProductByIdAsync(productId, _cancellationToken);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual(Status.NotFound, result.Status);
+            Assert.AreEqual($"The product with {productId} not found", result.ErrorMessage);
+        }
     }
 }
