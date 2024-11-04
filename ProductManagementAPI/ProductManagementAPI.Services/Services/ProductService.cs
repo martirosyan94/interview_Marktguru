@@ -1,6 +1,7 @@
 ﻿using ProductManagementAPI.Data;
 using ProductManagementAPI.Data.RepositoryInterfaces;
 using ProductManagementAPI.Services.Models.Request;
+using ProductManagementAPI.Services.Models.Response;
 using ProductManagementAPI.Services.Utilities;
 
 namespace ProductManagementAPI.Services.Services
@@ -27,6 +28,16 @@ namespace ProductManagementAPI.Services.Services
                 return OperationResult<PostProductDto>.Error("Failed to add the product.", Status.NetworkError);
 
             return OperationResult<PostProductDto>.Ok(product, Status.Created);
+        }
+
+        public async Task<OperationResult<IEnumerable<GetProductDto>>> GetAllProductsAsync(CancellationToken cancellationToken)
+        {
+            var allProducts = (await _productRepository.GetAllProductsAsync(cancellationToken)).ToList();
+
+            if (!allProducts.Any())
+                return OperationResult<IEnumerable<GetProductDto>>.Error("There are no available products", Status.NotFound);
+
+            return OperationResult<IEnumerable<GetProductDto>>.Ok(allProducts.Select(p => p.ToGetProductDto()));
         }
     }
 }

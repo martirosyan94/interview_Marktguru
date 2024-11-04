@@ -1,5 +1,6 @@
 ﻿using ProductManagementAPI.Data.Models;
 using ProductManagementAPI.Services.Models.Request;
+using ProductManagementAPI.Services.Models.Response;
 
 namespace ProductManagementAPI.Services.Utilities
 {
@@ -14,6 +15,17 @@ namespace ProductManagementAPI.Services.Utilities
                 Available = productDto.Available,
                 Description = productDto.Description,
                 DateCreated = DateTime.UtcNow
+            };
+        }
+
+        public static GetProductDto ToGetProductDto(this Product product)
+        {
+            return new GetProductDto()
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Available = product.Available
             };
         }
     }
