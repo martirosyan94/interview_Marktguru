@@ -33,5 +33,8 @@ namespace ProductManagementAPI.Data.Repositories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 
+        public void UpdateProduct(Product product) =>
+            _context.Products.Update(product);
+
     }
 }

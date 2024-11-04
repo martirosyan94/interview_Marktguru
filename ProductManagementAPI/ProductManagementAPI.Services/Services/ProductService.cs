@@ -51,6 +51,23 @@ namespace ProductManagementAPI.Services.Services
             return OperationResult<GetProductDetailDto>.Ok(productResult.Data!.ToGetProductDetailDto());
         }
 
+        public async Task<OperationResult<UpdateProductDto>> UpdateProductAsync(int id, UpdateProductDto updateProduct, CancellationToken cancellationToken)
+        {
+            var productResult = await LoadProductByIdAsync(id, cancellationToken);
+            if (!productResult.Success)
+                return OperationResult<UpdateProductDto>.Error(productResult.ErrorMessage, productResult.Status);
+
+            var existingProduct = updateProduct.ToProductEntityModel(id, productResult.Data!.RowVersion);
+
+            _productRepository.UpdateProduct(existingProduct);
+            var success = await _productRepository.SaveChangesAsync(cancellationToken);
+
+            if (!success)
+                return OperationResult<UpdateProductDto>.Error("Failed to update the product.", Status.NetworkError);
+
+            return OperationResult<UpdateProductDto>.Ok(updateProduct);
+        }
+
         private async Task<OperationResult<Product>> LoadProductByIdAsync(int id, CancellationToken cancellationToken)
         {
             var existingProduct = await _productRepository.GetProductByIdAsync(id, cancellationToken);

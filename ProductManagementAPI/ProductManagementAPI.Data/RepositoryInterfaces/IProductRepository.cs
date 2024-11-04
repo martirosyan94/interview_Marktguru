@@ -9,5 +9,6 @@ namespace ProductManagementAPI.Data.RepositoryInterfaces
         Task<bool> SaveChangesAsync(CancellationToken cancellationToken);
         Task<IEnumerable<Product?>> GetAllProductsAsync(CancellationToken cancellationToken);
         Task<Product?> GetProductByIdAsync(int id, CancellationToken cancellationToken);
+        void UpdateProduct(Product product);
     }
 }
