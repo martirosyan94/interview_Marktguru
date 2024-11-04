@@ -1,8 +1,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ProductManagementAPI.Data.Repositories;
+using ProductManagementAPI.Data.RepositoryInterfaces;
+using ProductManagementAPI.Data;
 using ProductManagementAPI.Services.Services;
 using ProductManagementAPI.Services.Settings;
+using ProductManagementAPI.settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +16,7 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 
 // Register Services
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -34,6 +40,14 @@ builder.Services.AddAuthorization(options =>
         .RequireAuthenticatedUser()
         .Build();
 });
+
+// Register Repositories
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
+// Register db
+var entitySettings = builder.Configuration.GetSection("EntitySettings").Get<EntitySettings>(); ;
+builder.Services.AddDbContext<ProductDbContext>(options =>
+    options.UseSqlServer(entitySettings!.ConnectionString));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
