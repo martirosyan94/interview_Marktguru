@@ -172,5 +172,17 @@ namespace ProductManagementAPI.UnitTests.ServicesTests
             Assert.AreEqual(Status.NotFound, result.Status);
             Assert.AreEqual($"The product with {productId} not found", result.ErrorMessage);
         }
+
+        [Test]
+        public async Task DeleteProduct_ShouldReturnError_WhenProductIdDoesNotExist()
+        {
+            int productId = 500;
+
+            var result = await _productService.DeleteProductAsync(productId, _cancellationToken);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual(Status.NotFound, result.Status);
+            Assert.AreEqual($"The product with {productId} not found", result.ErrorMessage);
+        }
     }
 }
