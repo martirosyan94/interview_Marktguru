@@ -36,5 +36,7 @@ namespace ProductManagementAPI.Data.Repositories
         public void UpdateProduct(Product product) =>
             _context.Products.Update(product);
 
+        public void DeleteProduct(Product product) =>
+            _context.Products.Remove(product);
     }
 }
