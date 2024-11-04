@@ -1,4 +1,5 @@
 ﻿using ProductManagementAPI.Data;
+using ProductManagementAPI.Data.Models;
 using ProductManagementAPI.Data.RepositoryInterfaces;
 using ProductManagementAPI.Services.Models.Request;
 using ProductManagementAPI.Services.Models.Response;
@@ -38,6 +39,26 @@ namespace ProductManagementAPI.Services.Services
                 return OperationResult<IEnumerable<GetProductDto>>.Error("There are no available products", Status.NotFound);
 
             return OperationResult<IEnumerable<GetProductDto>>.Ok(allProducts.Select(p => p.ToGetProductDto()));
+        }
+
+        public async Task<OperationResult<GetProductDetailDto>> GetProductByIdAsync(int id, CancellationToken cancellationToken)
+        {
+            var productResult = await LoadProductByIdAsync(id, cancellationToken);
+
+            if (!productResult.Success)
+                return OperationResult<GetProductDetailDto>.Error(productResult.ErrorMessage, productResult.Status);
+
+            return OperationResult<GetProductDetailDto>.Ok(productResult.Data!.ToGetProductDetailDto());
+        }
+
+        private async Task<OperationResult<Product>> LoadProductByIdAsync(int id, CancellationToken cancellationToken)
+        {
+            var existingProduct = await _productRepository.GetProductByIdAsync(id, cancellationToken);
+
+            if (existingProduct is null)
+                return OperationResult<Product>.Error($"The product with {id} not found", Status.NotFound);
+
+            return OperationResult<Product>.Ok(existingProduct);
         }
     }
 }

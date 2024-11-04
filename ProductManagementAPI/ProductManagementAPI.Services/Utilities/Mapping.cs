@@ -28,5 +28,18 @@ namespace ProductManagementAPI.Services.Utilities
                 Available = product.Available
             };
         }
+
+        public static GetProductDetailDto ToGetProductDetailDto(this Product product)
+        {
+            return new GetProductDetailDto()
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Available = product.Available,
+                Description = product.Description,
+                DateCreated = product.DateCreated
+            };
+        }
     }
 }

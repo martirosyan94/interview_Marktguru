@@ -27,5 +27,11 @@ namespace ProductManagementAPI.Data.Repositories
             await _context.Products
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
+
+        public async Task<Product?> GetProductByIdAsync(int id, CancellationToken cancellationToken) =>
+            await _context.Products
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+
     }
 }

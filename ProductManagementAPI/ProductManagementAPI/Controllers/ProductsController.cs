@@ -42,6 +42,18 @@ namespace ProductManagementAPI.Controllers
 
                 return StatusCode((int)response.Status, response.ErrorMessage);
             }
+
+            [HttpGet("{id:int}")]
+            [AllowAnonymous]
+            public async Task<IActionResult> GetProduct(int id, CancellationToken cancellationToken)
+            {
+                var response = await _productService.GetProductByIdAsync(id, cancellationToken);
+
+                if (response.Success)
+                    return Ok(response.Data);
+
+                return StatusCode((int)response.Status, response.ErrorMessage);
+            }
         }
     }
 }
