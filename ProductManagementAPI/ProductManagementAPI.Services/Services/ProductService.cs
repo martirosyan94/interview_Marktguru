@@ -68,16 +68,6 @@ namespace ProductManagementAPI.Services.Services
             return OperationResult<UpdateProductDto>.Ok(updateProduct);
         }
 
-        private async Task<OperationResult<Product>> LoadProductByIdAsync(int id, CancellationToken cancellationToken)
-        {
-            var existingProduct = await _productRepository.GetProductByIdAsync(id, cancellationToken);
-
-            if (existingProduct is null)
-                return OperationResult<Product>.Error($"The product with {id} not found", Status.NotFound);
-
-            return OperationResult<Product>.Ok(existingProduct);
-        }
-
         public async Task<OperationResult> DeleteProductAsync(int id, CancellationToken cancellationToken)
         {
             var productResult = await LoadProductByIdAsync(id, cancellationToken);
@@ -91,6 +81,16 @@ namespace ProductManagementAPI.Services.Services
                 return OperationResult<UpdateProductDto>.Error("Failed to Delete the product.", Status.NetworkError);
 
             return OperationResult.Ok();
+        }
+
+        private async Task<OperationResult<Product>> LoadProductByIdAsync(int id, CancellationToken cancellationToken)
+        {
+            var existingProduct = await _productRepository.GetProductByIdAsync(id, cancellationToken);
+
+            if (existingProduct is null)
+                return OperationResult<Product>.Error($"The product with {id} not found", Status.NotFound);
+
+            return OperationResult<Product>.Ok(existingProduct);
         }
     }
 }
